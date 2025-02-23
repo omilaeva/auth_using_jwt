@@ -1,0 +1,39 @@
+services:
+  jwt_client:
+    build: client
+    restart: unless-stopped
+    volumes:
+      - ./client/src:/app/src
+    ports:
+      - 5173:5173
+    depends_on:
+      - jwt_server
+
+  jwt_server:
+    build: server
+    restart: unless-stopped
+    volumes:
+      - ./server:/app
+    ports:
+      - 8000:8000
+    env_file:
+      - project.env
+    depends_on:
+      - database
+
+  database:
+    container_name: jwt_postgresql_database
+    image: postgres:17.0
+    restart: unless-stopped
+    env_file:
+      - project.env
+
+  database-migrations:
+    image: flyway/flyway:10
+    env_file:
+      - project.env
+    depends_on:
+      - database
+    volumes:
+      - ./database-migrations:/flyway/sql
+    command: -connectRetries=60 -baselineOnMigrate=true migrate
