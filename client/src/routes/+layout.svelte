@@ -6,7 +6,6 @@
 
     const userState = useUserState();
     if (data.user) {
-        console.log(data.user);
         userState.user = data.user;
     }
 </script>
@@ -19,14 +18,14 @@
 <nav class="fixed top-0 z-50 left-0 w-full bg-blue-500 text-white p-4 shadow-md">
     <div class="container mx-auto flex justify-between items-center">
         <!-- Logo -->
-        <a href="/" class="text-2xl font-bold">ToDo List</a>
+        <a href="/" class="text-2xl font-bold">Notes</a>
 
         <!-- Desktop Menu -->
         <ul class="hidden md:flex space-x-6">
             <li><a href="/" class="hover:underline">Home</a></li>
             <li><a href="/about" class="hover:underline">About</a></li>
             {#if data?.user}
-                <li><a href="/user" class="hover:underline">{data.user.username}</a></li>
+                <li><a href="#user" class="hover:underline">{data.user.username}</a></li>
             {:else}
                 <li><a href="/auth/register" class="hover:underline">Register</a></li>
                 <li><a href="/auth/login" class="hover:underline">Login</a></li>
@@ -58,7 +57,7 @@
     </div>
 </nav>
 <main class="flex flex-1 flex-col mt-16">
-    <div class="bg-gradient-to-br from-blue-400 via-emerald-200 to-fuchsia-400">
+    <div class="bg-sky-100">
         {@render children()}
     </div>
 </main>

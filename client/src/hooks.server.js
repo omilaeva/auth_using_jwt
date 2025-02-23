@@ -4,7 +4,6 @@ import {PUBLIC_INTERNAL_API_URL} from "$env/static/public";
 const COOKIE_KEY = "auth";
 
 export const handle = async ({ event, resolve }) => {
-    console.log("handle server hook");
     const authCookie = event.cookies.get(COOKIE_KEY);
     if (authCookie) {
         const response = await fetch(`${PUBLIC_INTERNAL_API_URL}/api/verify`, {
@@ -14,7 +13,6 @@ export const handle = async ({ event, resolve }) => {
             },
         });
 
-        console.log(response);
         // response not ok, clear cookie
         if (!response.ok) {
             event.cookies.delete(COOKIE_KEY, { path: "/" });
@@ -38,7 +36,6 @@ export const handle = async ({ event, resolve }) => {
 
         try {
             event.locals.user = decodeJwt(authCookie);
-            console.log("set user");
         } catch (e) {
             console.log(e);
         }

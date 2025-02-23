@@ -4,8 +4,6 @@ import {redirect} from "@sveltejs/kit";
 const COOKIE_KEY = "auth";
 
 const apiRequest = async (url, data) => {
-    console.log(JSON.stringify(data));
-
     return await fetch(`${PUBLIC_INTERNAL_API_URL}${url}`, {
         method: "POST",
         headers: {
@@ -22,8 +20,6 @@ export const actions = {
             "/api/login",
             Object.fromEntries(data),
         );
-        console.log("-----------+page.server.js (action login)----------");
-        console.log(response);
         if (response.ok) {
             const responseCookies = response.headers.getSetCookie();
             const authCookie = responseCookies.find((cookie) =>
@@ -42,8 +38,6 @@ export const actions = {
             "/api/register",
             Object.fromEntries(data),
         );
-        console.log("Get response");
-        console.log(response);
         if (response.ok) {
             throw redirect(302, "/auth/login?registered=true");
         }
