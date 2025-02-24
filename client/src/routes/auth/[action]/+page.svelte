@@ -5,9 +5,9 @@
 {#if form && !form.success}
     <p class="text-red-800">{form.message}</p>
 {/if}
-<!-- TODO: add toast for this message -->
+
 {#if data.registered}
-    <p class="">You have successfully registered. Please login to continue.</p>
+    <p class="text-lg text-gray-700 dark:text-gray-300 font-light leading-loose">You have successfully registered. Please login to continue.</p>
 {/if}
 
 <div class="flex-col align-center justify-items-center p-8 h-screen">
