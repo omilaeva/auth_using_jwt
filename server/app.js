@@ -19,6 +19,45 @@ app.use(
     }),
 );
 
+const userMiddleware = async (c, next) => {
+    console.log("Apply middleware");
+    const token = getCookie(c, COOKIE_KEY);
+    if (!token) {
+        await next();
+        return;
+    }
+    const { payload } = jwt.decode(token);
+    c.user = payload;
+    await next();
+};
+app.use("*", userMiddleware);
+
+const accessControlList = {
+    "/api/admin": ["ADMIN"],
+};
+
+const aclMiddleware = async (c, next) => {
+    const roles = accessControlList[c.req.path];
+    if (!roles) {
+        await next();
+        return;
+    }
+
+    if (!c.user?.roles) {
+        c.status(401);
+        return c.json({ error: "Unauthorized" });
+    }
+
+    if (!c.user.roles.some((r) => roles.includes(r))) {
+        c.status(403);
+        return c.json({ error: "Forbidden" });
+    }
+
+    await next();
+};
+
+app.use("*", aclMiddleware);
+
 const clean = (data) => {
     data.username = data.username.trim().toLowerCase();
     data.password = data.password.trim();
@@ -53,9 +92,15 @@ app.post("/api/login", async (c) => {
 
     const passwordValid = verify(data.password, user.password_hash);
     if (passwordValid) {
+        const rolesResult = await sql`SELECT role FROM user_roles
+            WHERE user_id = ${user.id}`;
+        const roles = rolesResult.map((r) => r.role);
+
         const payload = {
             id: user.id,
             username: user.username,
+            roles: roles,
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
         };
 
         const token = await jwt.sign(payload, JWT_SECRET);
@@ -92,7 +137,6 @@ app.post("/api/verify", async (c) => {
     return c.json(payload);
 });
 
-// first, verify that the token is valid
 app.use(
     "/api/notes/*",
     jwt.jwt({
@@ -100,17 +144,6 @@ app.use(
         secret: JWT_SECRET,
     }),
 );
-
-// then, extract the user identifier from the token
-const userMiddleware = async (c, next) => {
-    console.log("Apply middleware");
-    const token = getCookie(c, COOKIE_KEY);
-    const { payload } = jwt.decode(token);
-    c.user = payload;
-    await next();
-};
-// app.use("/api/notes", userMiddleware);
-app.use("/api/notes/*", userMiddleware);
 
 app.get("/api/notes", async (c) => {
     console.log(c.user);

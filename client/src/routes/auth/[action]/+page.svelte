@@ -29,7 +29,7 @@
             <input class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                    id="password" name="password" type="password" placeholder="********"/>
         </label>
-        <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition disabled:bg-blue-100" type="submit">
+        <button class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition disabled:bg-blue-100" type="submit">
             {data.action === "login" ? "Login" : "Register"}
         </button>
     </form>

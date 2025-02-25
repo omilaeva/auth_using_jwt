@@ -2,11 +2,22 @@
     import { useUserState } from "$lib/states/userState.svelte.js";
 
     let {children, data} = $props();
-    let isOpen = $state(false);
+    let isMobileMenuOpen = $state(false);
 
     const userState = useUserState();
     if (data.user) {
         userState.user = data.user;
+    }
+
+    let isUserMenuOpen = $state(false);
+
+    const toggleDropdown = () => {
+        isUserMenuOpen = !isUserMenuOpen;
+    }
+
+    const logout = () => {
+        // Perform logout logic (redirect, API call, etc.)
+        console.log("User logged out");
     }
 </script>
 
@@ -22,19 +33,44 @@
 
         <!-- Desktop Menu -->
         <ul class="hidden md:flex space-x-6">
-            <li><a href="/" class="hover:underline">Home</a></li>
-            <li><a href="/about" class="hover:underline">About</a></li>
+            <li class="py-2"><a href="/" class="hover:underline">Home</a></li>
+            <li class="py-2"><a href="/about" class="hover:underline">About</a></li>
             {#if data?.user}
-                <li><a href="#user" class="hover:underline">{data.user.username}</a></li>
+                <div class="relative inline-block">
+                    <!-- Button to open dropdown -->
+                    <button
+                            onclick={toggleDropdown}
+                            class="flex items-center px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none">
+                        {data.user.username} ⏷
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    {#if isUserMenuOpen}
+                        <ul class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                            {#if data.user?.roles?.includes("ADMIN")}
+                                <li>
+                                    <a href="/admin" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                        Admin Panel
+                                    </a>
+                                </li>
+                            {/if}
+                            <li>
+                                <button onclick={logout} class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
+                                    Logout
+                                </button>
+                            </li>
+                        </ul>
+                    {/if}
+                </div>
             {:else}
-                <li><a href="/auth/register" class="hover:underline">Register</a></li>
-                <li><a href="/auth/login" class="hover:underline">Login</a></li>
+                <li class="py-2"><a href="/auth/register" class="hover:underline">Register</a></li>
+                <li class="py-2"><a href="/auth/login" class="hover:underline">Login</a></li>
             {/if}
         </ul>
 
         <!-- Mobile Hamburger Button (visible on small screens) -->
         <div class="md:hidden">
-            <button onclick={() => isOpen = !isOpen} aria-label="Toggle menu">
+            <button onclick={() => isMobileMenuOpen = !isMobileMenuOpen} aria-label="Toggle menu">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -45,11 +81,27 @@
     </div>
 
     <!-- Mobile Dropdown Menu (visible on small screens when isMenuOpen is true) -->
-    <div class={`md:hidden ${isOpen ? 'block' : 'hidden'} bg-blue-500 text-white p-4 space-y-2`}>
+    <div class={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'} bg-blue-500 text-white p-4 space-y-2`}>
         <a href="/" class="block py-2">Home</a>
         <a href="/about" class="block py-2">About</a>
         {#if data?.user}
-            <li><a href="/user" class="block py-2">{data.user.username}</a></li>
+            <div class="relative">
+                <button
+                        class="block w-full text-left py-2 px-3 rounded hover:bg-blue-600"
+                        onclick={toggleDropdown}>
+                    {data.user.username} ⏷
+                </button>
+                <ul class={`absolute left-0 w-full bg-white rounded shadow-md mt-1 ${isUserMenuOpen ? 'block' : 'hidden'}`}>
+                    {#if data.user?.roles?.includes("ADMIN")}
+                        <li><a href="/admin" class="block py-2 px-3 hover:bg-blue-700  text-gray-700 hover:bg-gray-100">Admin Panel</a></li>
+                    {/if}
+                    <li>
+                        <button onclick={logout} class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
+                            Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
         {:else}
             <li><a href="/auth/register" class="block py-2">Register</a></li>
             <li><a href="/auth/login" class="block py-2">Login</a></li>
@@ -57,6 +109,14 @@
     </div>
 </nav>
 <main class="flex flex-1 flex-col mt-16">
+    {#if data && data.user}
+        <p class="text-lg text-gray-700 dark:text-gray-300 font-light leading-loose">
+            Hello {data.user.username}!
+        </p>
+        <p class="text-lg text-gray-700 dark:text-gray-300 font-light leading-loose">
+            Your roles are: {data.user.roles?.join(", ")}
+        </p>
+    {/if}
     <div class="bg-sky-100">
         {@render children()}
     </div>
