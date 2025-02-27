@@ -29,6 +29,7 @@ export const handle = async ({ event, resolve }) => {
 
         // if no cookie, no need to extract it -- just resolve
         if (!cookie) {
+            console.log("Delete cookie?");
             return await resolve(event);
         }
 

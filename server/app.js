@@ -169,4 +169,15 @@ app.get("/api/notes/:id", async (c) => {
     return c.json(notes[0]);
 });
 
+app.post("/api/logout", async (c) => {
+    setCookie(c, COOKIE_KEY, "", {
+        path: "/",
+        domain: "localhost",
+        httpOnly: true,
+        sameSite: "lax",
+        maxAge: -1,
+    });
+    return c.json({message: "Successfully logged out"});
+})
+
 export default app;
