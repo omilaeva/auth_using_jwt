@@ -46,10 +46,6 @@
 </script>
 
 <div class="place-self-center py-3 flex-col place-items-center h-screen">
-    <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition disabled:bg-blue-100"
-            onclick={fetchNotes}>Fetch notes
-    </button>
-
     <h2 class="text-2xl font-bold mt-4 mb-4 text-center text-blue-500">Notes</h2>
 
     {#if error}

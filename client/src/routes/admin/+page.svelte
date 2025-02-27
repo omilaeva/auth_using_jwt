@@ -1,0 +1,1 @@
+<p class="mt-8 text-lg mx-5">You're an admin.</p>
